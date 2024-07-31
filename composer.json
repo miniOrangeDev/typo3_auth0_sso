@@ -1,0 +1,28 @@
+{
+  "name": "miniorange/auth0_sso",
+  "description": "Auth0 extension for Typo3 allows your backend and frontend users to log in (Single Sign-On - SSO) into TYPO3 using Auth0 credentials.",
+  "type": "typo3-cms-extension",
+  "license": [
+    "GPL-2.0-or-later"
+  ],
+  "authors": [
+    {
+      "name": "miniOrange",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "typo3/cms-core": "^10. || ^11. || ^12."
+  },
+  "version": "1.0.0",
+  "autoload": {
+    "psr-4": {
+      "Miniorange\\Auth0SSO\\": "Classes/"
+    }
+  },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "auth0_sso"
+    }
+  }
+}

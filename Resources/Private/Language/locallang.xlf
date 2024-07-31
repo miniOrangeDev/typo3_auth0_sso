@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2019-05-10T08:29:02Z" product-name="auth0_sso">
+		<header/>
+		<body>
+			<trans-unit id="tx_oauth_domain_model_feoidc">
+				<source>Feoidc</source>
+			</trans-unit>
+			<trans-unit id="tx_oauth_domain_model_beoidc">
+				<source>Beoidc</source>
+			</trans-unit>
+			<trans-unit id="tx_oauth_domain_model_response">
+				<source>Response</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
