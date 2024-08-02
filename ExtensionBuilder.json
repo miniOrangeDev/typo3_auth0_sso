@@ -152,10 +152,10 @@
       "sourceLanguage": "en",
       "state": "alpha",
       "targetVersion": "10.4.3-11.5.0",
-      "version": "1.0.0"
+      "version": "1.0.1"
     },
     "extensionKey": "auth0_sso",
-    "name": "Keycloak SSO",
+    "name": "Auth0 SSO",
     "originalExtensionKey": "auth0_sso",
     "originalVendorName": "Miniorange",
     "persons": [

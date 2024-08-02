@@ -32,7 +32,7 @@ Installation Instructions:
     - User Info Endpoint : https:// < your Auth0 domain > /userinfo
     - Set client credentials in : Header/Body
 
-6. Provide the redirect/callback URL in your Keyclaok application by copying it from Frontend Redirect/Callback Url field in OpenID Connect Client tab.
+6. Provide the redirect/callback URL in your Auth0 application by copying it from Frontend Redirect/Callback Url field in OpenID Connect Client tab.
 
 7. Once you are done with the configurations on both ends (i.e., Typo3 and Auth0), click on the Test Configuration button in the OpenID Connect Client tab of the plugin and check if you are able to test it successfully.
 
