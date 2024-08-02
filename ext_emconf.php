@@ -9,12 +9,13 @@ $EM_CONF[$_EXTKEY] = [
             'typo3' => '8.7.30-12.4.99',
         ],
     ],
-    'version' => '1.0.1',
+    'version' => '1',
     'icon' => 'EXT:auth0_sso/Resources/Public/Icons/miniorange.svg',
     'state' => 'stable',
     'autoload' => [
         'psr-4' => [
             'Miniorange\\Auth0SSO\\' => 'Classes/',
         ],
-    ]
+    ],
+    'icon' => 'EXT:keycloak_sso/Resources/Public/Icons/miniorange.png'
 ];

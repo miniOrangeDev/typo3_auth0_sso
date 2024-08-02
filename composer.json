@@ -24,5 +24,6 @@
     "typo3/cms": {
       "extension-key": "auth0_sso"
     }
-  }
+  },
+  "icon": "Resources/Public/Icons/miniorange.png"
 }
