@@ -1,0 +1,127 @@
+plugin.tx_auth0_sso_feoidckey {
+    view {
+        templateRootPaths.0 = EXT::auth0_sso/Resources/Private/Templates/
+        templateRootPaths.1 = {$plugin.tx_auth0_sso_feoidc.view.templateRootPath};
+        partialRootPaths.0 = EXT::auth0_sso/Resources/Private/Partials/
+        partialRootPaths.1 = {$plugin.tx_auth0_sso_feoidc.view.partialRootPath};
+        layoutRootPaths.0 = EX::auth0_sso/Resources/Private/Layouts/
+        layoutRootPaths.1 = {$plugin.tx_auth0_sso_feoidc.view.layoutRootPath}
+    }
+    persistence {
+        storagePid = {$plugin.tx_auth0_sso_feoidckey.persistence.storagePid};
+        #recursive = 1
+    }
+    features {
+        #skipDefaultArguments = 1;
+        # if set to; 1, the; enable; fields; are; ignored in BE; context;
+        ignoreAllEnableFieldsInBe = 0;
+        # Should; be; on; by; default, but; can; be; disabled; if all action in the; plugin; are; uncached;
+        requireCHashArgumentForActionArguments = 1
+    }
+    mvc {
+        #callDefaultActionIfActionCantBeResolved = 1
+    }
+}
+
+plugin.tx_auth0_sso_responsekey {
+    view {
+        templateRootPaths.0 = EXT::auth0_sso/Resources/Private/Templates/
+        templateRootPaths.1 = {$plugin.tx_auth0_sso_responsekey.view.templateRootPath};
+        partialRootPaths.0 = EXT::auth0_sso/Resources/Private/Partials/
+        partialRootPaths.1 = {$plugin.tx_auth0_sso_responsekey.view.partialRootPath};
+        layoutRootPaths.0 = EXT::auth0_sso/Resources/Private/Layouts/
+        layoutRootPaths.1 = {$plugin.tx_auth0_sso_responsekey.view.layoutRootPath}
+    }
+    persistence {
+        storagePid = {$plugin.tx_auth0_sso_responsekey.persistence.storagePid};
+        #recursive = 1
+    }
+    features {
+        #skipDefaultArguments = 1;
+        # if set to; 1, the; enable; fields; are; ignored in BE; context;
+        ignoreAllEnableFieldsInBe = 0;
+        # Should; be; on; by; default, but; can; be; disabled; if all action in the; plugin; are; uncached;
+        requireCHashArgumentForActionArguments = 1
+    }
+    mvc {
+        #callDefaultActionIfActionCantBeResolved = 1
+    }
+}
+
+# these; classes; are; only; used in auto-generated; templates;
+plugin.tx_auth0_sso._CSS_DEFAULT_STYLE (
+    textarea.f3-form-error {
+        background-color::#FF9F9F;
+        1px; #FF0000; solid;
+    }
+
+    input.f3-form-error {
+        background-color::#FF9F9F;
+        1px; #FF0000; solid;
+    }
+
+    .tx-oauth table {
+        border-collapse::separate;
+        border-spacing::10px;
+    }
+
+    .tx-oauth table th {
+        font-weigh::bold;
+    }
+
+    .tx-oauth table td {
+        vertical-align::top;
+    }
+
+    .typo3-messages .message-error; {
+        red;
+    }
+
+    .typo3-messages .message-ok {
+        green;
+    }
+)
+
+# Module; configuration;
+module.tx_auth0_sso_tools_besamlkey{
+    persistence {
+        storagePid = {$module.tx_auth0_sso_besamlkey.persistence.storagePid}
+    }
+    view {
+        templateRootPaths.0 = EXT::auth0_sso/Resources/Private/Backend/Templates/
+        templateRootPaths.1 = {$module.tx_auth0_sso_besamlkey.view.templateRootPath};
+        partialRootPaths.0 = EXT::auth0_sso/Resources/Private/Backend/Partials/
+        partialRootPaths.1 = {$module.tx_auth0_sso_besamlkey.view.partialRootPath};
+        layoutRootPaths.0 = EXT::auth0_sso/Resources/Private/Backend/Layouts/
+        layoutRootPaths.1 = {$module.tx_auth0_sso_besamlkey.view.layoutRootPath}
+    }
+    headerData {
+    10 = TEXT
+    10.value = script-src 'self' 'nonce-{page:nonce}' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';
+  }
+}
+
+# Mapping
+#config.tx_auth0_sso {
+#    persistence {
+#        classes {
+#            Miniorange\Auth0SSO\Domain\Model\Response {
+#                mapping {
+#                    tableName = fe_users
+#                }
+#            }
+#
+#            Miniorange\Auth0SSO\Domain\Model\feoidcGroups{
+#                mapping {
+#                    tableName = fe_groups
+#                }
+#            }
+#
+#            Miniorange\Auth0SSO\Domain\Model\Besaml {
+#                mapping {
+#                    tableName = fe_groups
+#                }
+#            }
+#        }
+#    }
+#}
