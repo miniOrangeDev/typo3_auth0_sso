@@ -97,22 +97,22 @@ call_user_func(
         $iconRegistry->registerIcon(
             'auth0_sso-plugin-feoidc',
             \TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider::class,
-            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/miniorange.png']
+            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.png']
         );
         $iconRegistry->registerIcon(
             'auth0_sso-plugin-response',
             \TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider::class,
-            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/miniorange.png']
+            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.png']
         );
         $iconRegistry->registerIcon(
             'auth0_sso-plugin-logout',
             \TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider::class,
-            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/miniorange.png']
+            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.png']
         );
         $iconRegistry->registerIcon(
             'auth0_sso-plugin-bekey',
             \TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider::class,
-            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/miniorange.png']
+            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.png']
         );
 
     }
