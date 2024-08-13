@@ -23,7 +23,7 @@ call_user_func(
             $cache_actions_beoidc,
             [
                 'access' => 'user,group',
-                'icon'   => 'EXT:auth0_sso/Resources/Public/Icons/miniorange.png',
+                'icon'   => 'EXT:auth0_sso/Resources/Public/Icons/Extension.png',
                 'labels' => 'LLL:EXT:auth0_sso/Resources/Private/Language/locallang_bekey.xlf'
             ]
         );
@@ -32,14 +32,14 @@ call_user_func(
             $extensionName,
             'Feoidc',
             'feoidc',
-            'EXT:auth0_sso/Resources/Public/Icons/miniorange.svg'
+            'EXT:auth0_sso/Resources/Public/Icons/Extension.svg'
         );
 
         \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
             $extensionName,
             'Response',
             'response',
-            'EXT:auth0_sso/Resources/Public/Icons/miniorange.svg'
+            'EXT:auth0_sso/Resources/Public/Icons/Extension.svg'
         );
 
     }
