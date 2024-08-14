@@ -9,7 +9,7 @@ $EM_CONF[$_EXTKEY] = [
             'typo3' => '8.7.30-12.4.99',
         ],
     ],
-    'version' => '2.0.0',
+    'version' => '2.0.1',
     'icon' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.svg',
     'state' => 'stable',
     'autoload' => [
