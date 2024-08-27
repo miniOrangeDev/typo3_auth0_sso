@@ -17,7 +17,7 @@ Auth0 SSO
 		auth0_sso
 
 	:Version:
-		2.0.0
+		2.0.1
 
 	:Language:
 		en
@@ -54,4 +54,5 @@ Auth0 SSO
 	:titlesonly:
 
 	Installation
+	Configuration
 

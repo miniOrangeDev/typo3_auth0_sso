@@ -1,12 +1,32 @@
-Configurations
+Configuration
 =============
+
+Pre-requirements Before Configuring Extension
+*********************************************
+
+You must have atleast two pages before configuring the extension.
+
+.. tip:: Pages can be created by the following steps:-
+
+* Navigate to the Pages section and create new standard page with name feoidc and add feoidc plugin to it.
+* Similarly create a page named response and and response plugin to it.
+* You can refer to the below screenshots for the same.
+.. image:: Images/feoidc.png
+    :alt: Feoidc Page
+.. image:: Images/response.png
+    :alt: Response Page
+* Create SSO Login button in your Typo3 Frontend Site and embed the feoidc page URL to it in order to initiate the SSO.
+
+
+Extension Configurations
+************************
 
 * Once the extension is installed successfully, navigate to the OpenID Connect Client tab of the plugin and fill in all the required fields as below:
 	- OAuth/ OpenID Provider Name: {Name of your provider (e.g., Auth0)}
 	- Application type: OAuth/OpenID Connect
-	- Frontend Redirect/Callback Url : {Response Plugin Page URL which you created in step 4} (You will need to provide this URL to your
+	- Frontend Redirect/Callback Url : {Response Plugin Page URL which you created in earlier steps} (You will need to provide this URL to your
 	  OAuth/OIDC provider i.e., auth0)
-	- feoidc page URL: {feoidc Plugin Page URL which you created in step 4}
+	- feoidc page URL: {feoidc Plugin Page URL which you created in earlier steps}
 	- Client ID : {You will get it from your provider, i.e., auth0}
 	- Client Secret : {You will get it from your provider, i.e., auth0}
 	- Scope : openid profile email
