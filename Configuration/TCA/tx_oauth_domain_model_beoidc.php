@@ -1,7 +1,7 @@
 <?php
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:EXT:auth0_sso/Resources/Private/Language/locallang_db.xlf:tx_oauth_domain_model_beoidc',
+        'title' => 'LLL:EXT:auth0_sso/Resources/Private/Language/locallang_db.xlf:tx_oauth_domain_model_beoidc',
         'label' => 'uid',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -17,7 +17,7 @@ return [
             'endtime' => 'endtime',
         ],
         'searchFields' => '',
-        'iconfile' => 'EXT:EXT:auth0_sso/Resources/Public/Icons/tx_oauth_domain_model_beoidc.gif'
+        'iconfile' => 'EXT:auth0_sso/Resources/Public/Icons/tx_oauth_domain_model_beoidc.gif'
     ],
     'interface' => [
         'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, hidden, ',

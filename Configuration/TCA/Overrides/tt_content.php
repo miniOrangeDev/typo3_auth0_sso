@@ -15,17 +15,5 @@ call_user_func(
             $cache_actions_beoidc = ['Beoidc' => 'request'];
         }
 
-        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-            $extensionName,
-            'Feoidc',
-            'feoidc'
-        );
-
-        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-            $extensionName,
-            'Response',
-            'response'
-        );
-
     }
 );

@@ -11,7 +11,7 @@ return [
         'position' => [],
         'access' => 'user,group',
         'workspaces' => 'live',
-        'iconIdentifier' => 'auth0_sso-plugin-bekey',
+        'iconIdentifier' => 'auth0_sso-plugin-feoidc',
         'path' => 'module/tools/beoidckey',
         'labels' => 'LLL:EXT:auth0_sso/Resources/Private/Language/locallang_bekey.xlf',
         'extensionName' => 'auth0_sso',

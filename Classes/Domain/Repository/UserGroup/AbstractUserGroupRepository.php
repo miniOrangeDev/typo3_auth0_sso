@@ -14,6 +14,7 @@ namespace Miniorange\Auth0SSO\Domain\Repository\UserGroup;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Miniorange\Auth0SSO\Helper\MoUtilities;
 
 abstract class AbstractUserGroupRepository
 {
@@ -29,7 +30,12 @@ abstract class AbstractUserGroupRepository
 
     public function findAll(): array
     {
+        $typo3Version = MoUtilities::getTypo3Version();
+        if($typo3Version > 12){
+            return $this->getQueryBuilder()->select('*')->from($this->tableName)->executeQuery()->fetchAllAssociative();
+        }else{
         return $this->getQueryBuilder()->select('*')->from($this->tableName)->execute()->fetchAll();
+        }
     }
 
     protected function getQueryBuilder(): QueryBuilder

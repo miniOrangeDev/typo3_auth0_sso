@@ -5,8 +5,10 @@ namespace Miniorange\Auth0SSO\Helper\Actions;
 use Miniorange\Auth0SSO\Helper\Constants;
 use Miniorange\Auth0SSO\Helper\Utilities;
 use Miniorange\Auth0SSO\Helper\CustomerMo;
+use Miniorange\Auth0SSO\Helper\MoUtilities;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Connection;
 
 /**
  * This action class shows the attributes coming in the SAML
@@ -83,12 +85,6 @@ class TestResultActions
         $this->processTemplateContent();
 
         $this->processTemplateFooter();
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(Constants::TABLE_OIDC);
-        $configurations = $queryBuilder->selec->from(Constants::TABLE_OIDC)->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, PDO::PARAM_INT)))->execute()->fetch();
-        $configurations = $configurations[Constants::OIDC_OIDC_OBJECT];
-        $this->status = Utilities::isBlank($this->attrs) ? 'Test Failed' : 'Test Successful';
-        $customer = new CustomerMo();
-        $customer->submit_to_magento_team_core_config_data($this->status, $this->attrs, $configurations);
 
         printf($this->template);
         return;
@@ -124,7 +120,7 @@ class TestResultActions
 
 
     /**
-     * Append Attributes in the SAML response to the table
+     * Append Attributes in the OAuth/OIDC response to the table
      * content to be shown to the user.
      */
     private function getTableContent()
