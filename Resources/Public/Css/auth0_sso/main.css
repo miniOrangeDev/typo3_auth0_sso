@@ -1,0 +1,342 @@
+html, body {
+    overflow: auto;
+    height: 100%;
+}
+
+.btn {
+    background: #f05c00;
+}
+
+.button {
+    font-size: 28px;
+    min-width: 200px;
+    margin: 5px;
+    padding: 5px;
+
+    display: inline-block;
+    border-radius: 2px;
+    /*background-color: #f2f2f2;*/
+    border: none;
+    background-color: #f05c00;
+    color: white;
+    text-shadow: 2px 2px 4px #0f0e0e;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.5s;
+    cursor: pointer;
+}
+
+.button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+.button span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+}
+
+.button:hover span {
+    padding-right: 25px;
+}
+
+.button:hover span:after {
+    opacity: 1;
+    right: 0;
+}
+
+body {
+    font-family: Arial;
+}
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background: #002b36;
+    box-shadow: 2px 2px 2px darkgrey;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 10px 14px;
+    transition: 0.3s;
+    font-size: 18px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background: #e8d658;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #f05c00;
+    color: white;
+    font-weight: bolder;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 3px 6px;
+    border-top: none;
+    margin-left: -50px;
+}
+
+/* Main configuration tab content styles */
+.tabcontent-main {
+    display: none;
+    padding: 3px 6px;
+    border-top: none;
+    margin-left: -50px;
+}
+
+/* Support tab content styles */
+.tabcontent-support {
+    display: none;
+    padding: 15px;
+    border-top: none;
+    margin-bottom: 20px;
+}
+
+.profileTable {
+    width: 100%;
+    background: #fcf4bb;
+    border: solid 2px orangered;
+}
+
+.profileTable tbody td {
+    text-align: center;
+    padding: 15px;
+    border: solid 2px black;
+}
+
+#topContainer {
+    display: flex;
+    flex-flow: row wrap;
+    width: 100%;
+    justify-content: space-evenly /*justify-content: space-between;*/
+}
+
+#leftContainer {
+    order: 1;
+    flex: 0.2 1 45%;
+}
+
+#rightContainer {
+    order: 2;
+    flex: 0.2 1 30%;
+}
+
+.hideElement {
+    display: none;
+}
+
+.showElement {
+    display: block;
+}
+
+/* hr {
+    border-top: 2px solid lightgrey;
+} */
+
+.helpButton {
+    background: #428bca;
+    color: white;
+    font-weight: bold;
+    box-shadow: 2px 2px 2px darkgrey;
+    text-shadow: 2px 2px 4px black;
+    border-radius: 5px;
+}
+
+.premiumMessage {
+    color: red;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.premiumBox {
+    font-weight: bold;
+    background: #ffe6e6;
+}
+
+.price .header {
+    background-color: #111;
+    color: white;
+    font-size: 25px;
+}
+
+.gm-div {
+    display: flex;
+    flex-flow: row nowrap;
+    width: 100%;
+    margin: 15px 0;
+}
+
+.gm-input-label {
+    order: 1;
+    justify-self: left;
+    flex: 0.2 1 48%;
+    background: lightgrey;
+    margin-right: 2%;
+}
+
+.gm-input {
+    order: 2;
+    flex: 0.2 1 50%;
+    margin-left: 2%;
+    justify-self: right;
+}
+
+.gm-submit {
+    margin-left: 2%;
+}
+
+.tooltip_meta {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip_meta .tooltiptext {
+    visibility: hidden;
+    width: 140px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -75px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip_meta .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.tooltip_meta:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+table {
+    border-collapse: collapse; /* Collapse borders to create a single border */
+    width: 100%; /* Set table width */
+}
+
+th, td {
+    border: 1px solid #ccc; /* Add a 1px solid border to header cells and data cells */
+    padding: 8px; /* Add padding for spacing */
+    text-align: center; /* Align text to the left within cells */
+}
+
+thead {
+    background-color: #f2f2f2; /* Optional: Add a background color to the header row */
+}
+
+
+.columns {
+    float: left;
+    width: 50%;
+    padding: 5px;
+}
+
+.price {
+    list-style-type: none;
+    border: 1px solid #eee;
+    margin: 0;
+    padding: 0;
+    -webkit-transition: 0.3s;
+    transition: 0.3s;
+}
+
+.price:hover {
+    box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.2)
+}
+
+.price .header {
+    background-color: #f05c00;
+    color: white;
+    font-size: 25px;
+}
+
+.price li {
+    border-bottom: 1px solid #eee;
+    padding: 20px;
+    text-align: center;
+}
+
+.price .grey {
+    background-color: #eee;
+    font-size: 14px;
+}
+
+.pull-right > .dropdown-menu {
+    right: 0;
+    left: auto
+}
+
+.media > .pull-right {
+    padding-left: 10px
+}
+
+.pull-right {
+    float: right !important
+}
+
+.row {
+    margin-right: -15px;
+    margin-left: -15px
+}
+
+/* Tab Content Styles */
+
+/* Original tabcontent class (kept for backward compatibility) */
+.tabcontent {
+    display: none;
+    padding: 3px 6px;
+    border-top: none;
+    margin-left: -50px;
+}
+
+/* Main configuration tab content styles */
+.tabcontent-main {
+    display: none;
+    padding: 3px 6px;
+    border-top: none;
+    margin-left: -50px;
+}
+
+/* Support tab content styles */
+.tabcontent-support {
+    display: none;
+    padding: 15px;
+    border-top: none;
+    margin-bottom: 20px;
+    margin-right: 10px;
+    width: 400px;
+}
+

@@ -18,10 +18,6 @@ use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 return [
     'auth0_sso-plugin-feoidc' => [
         'provider' => SvgIconProvider::class,
-        'source' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.png'
+        'source' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.svg'
     ],
-    'auth0_sso-plugin-response' => [
-        'provider' => SvgIconProvider::class,
-        'source' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.png'
-    ]
 ];

@@ -5,7 +5,7 @@ CREATE TABLE mo_oidc
     oidc_am_username varchar(100) DEFAULT '',
     oidc_object      text         DEFAULT '',
     defaultGroup     text         DEFAULT '',
-    countuser        int(11) DEFAULT '10' NOT NULL,
+    countuser        text        DEFAULT '',
     isEmailSent      int(11) DEFAULT '0' NOT NULL,
     isTestEmailSent  int(11) DEFAULT '0' NOT NULL,
     isUserLimitExceedEmailSent int(11) DEFAULT '0' NOT NULL,
@@ -20,6 +20,7 @@ CREATE TABLE mo_customer
     cust_api_key    varchar(100) DEFAULT '',
     cust_token      varchar(100) DEFAULT '',
     cust_reg_status varchar(100) DEFAULT '',
+    timestamp       text         DEFAULT '',
     PRIMARY KEY (id)
 );
 

@@ -17,7 +17,7 @@ Auth0 SSO
 		auth0_sso
 
 	:Version:
-		2.0.1
+		2.0.2
 
 	:Language:
 		en

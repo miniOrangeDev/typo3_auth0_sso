@@ -14,7 +14,7 @@
   "require": {
     "typo3/cms-core": "^8. || ^9. || ^10. || ^11. || ^12. || ^13."
   },
-  "version": "2.0.1",
+  "version": "2.0.2",
   "autoload": {
     "psr-4": {
       "Miniorange\\Auth0SSO\\": "Classes/"
@@ -25,5 +25,5 @@
       "extension-key": "auth0_sso"
     }
   },
-  "icon": "Resources/Public/Icons/Extension.png"
+  "icon": "Resources/Public/Icons/Extension.svg"
 }

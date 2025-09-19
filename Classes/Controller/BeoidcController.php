@@ -12,11 +12,18 @@ use PDO;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 use TYPO3\CMS\Core\Information\Typo3Version;
 use Miniorange\Auth0SSO\Domain\Repository\UserGroup\FrontendUserGroupRepository;
 use Miniorange\Auth0SSO\Domain\Repository\UserGroup\BackendUserGroupRepository;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use TYPO3\CMS\Core\Page\PageRenderer;
+use Miniorange\Auth0SSO\Helper\Actions\TestResultActions;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 /**
  *BeoidcController
@@ -27,24 +34,96 @@ class BeoidcController extends ActionController
     protected $response = null;
     protected $tab = "";
     private $myjson = null;
+    protected $pageRenderer;
+    protected $oidc_object = null;
 
     /**
      * @throws Exception
      */
-    public function requestAction()
+    public function injectPageRenderer(PageRenderer $pageRenderer): void
     {
+        $this->pageRenderer = $pageRenderer;
+    }
+    public function requestAction(): ResponseInterface
+    {
+        // Perform lazy migration when database is available
+        MoUtilities::performLazyMigration();
+        
+        // Load CSS and JS files for TYPO3 v12/v13 compatibility
+        $this->pageRenderer->addCssFile('EXT:auth0_sso/Resources/Public/Css/auth0_sso/main.css');
+        $this->pageRenderer->loadJavaScriptModule('EXT:auth0_sso/Resources/Public/JavaScript/auth0_sso/main.js');
         $customer = new CustomerMo();
         $version = new Typo3Version();
         $typo3Version = $version->getVersion();
+        $timestamp = MoUtilities::fetch_cust(Constants::TIMESTAMP);
+        if($timestamp==NULL)
+            {
+                $timestamp = time();
+                $site = GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST');
+                $pluginVersion = ExtensionManagementUtility::getExtensionVersion(Constants::EXTENSION_KEY);
+                $email = !empty($GLOBALS['BE_USER']->user['email']) ? $GLOBALS['BE_USER']->user['email'] : $GLOBALS['BE_USER']->user['username'];
+                $values=array($site);
+                $data = [
+                    'timeStamp' => $timestamp,
+                    'adminEmail' => $email,
+                    'domain' => $site,
+                    'pluginName' => 'Typo3 Auth0 SSO Free',
+                    'pluginVersion' => $pluginVersion,
+                    'pluginFirstPageVisit' => 'OpenID Connect Client',
+                    'environmentName' => 'TYPO3',
+                    'environmentVersion' => $typo3Version,
+                    'IsFreeInstalled' => 'Yes',
+                    'FreeInstalledDate' =>  date('Y-m-d H:i:s')
+                ];
+                $customer->syncPluginMetrics($data);
+                MoUtilities::update_cust(Constants::TIMESTAMP, $timestamp);
+                $uid = Utilities::fetchFromTable('uid',Constants::TABLE_OIDC);
+                if($uid == null)
+                {
+                    $this->setCount();
+                }
+                GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->flushCaches();
+            }
         $send_email = MoUtilities::fetchFromOidc(Constants::EMAIL_SENT);
 
         if ($send_email == NULL) {
             $site = GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST');
             $values = array($site);
             $email = !empty($GLOBALS['BE_USER']->user['email']) ? $GLOBALS['BE_USER']->user['email'] : $GLOBALS['BE_USER']->user['username'];
-            $customer->submit_to_magento_team($email, 'Installed Successfully', $values, $typo3Version);
-            MoUtilities::updateOidc(Constants::COUNTUSER, 10);
-            MoUtilities::updateOidc(Constants::EMAIL_SENT, 1);
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(Constants::TABLE_OIDC);
+            if($typo3Version > 12)
+            {
+            $uid = $queryBuilder->select('uid')->from(Constants::TABLE_OIDC)
+                    ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))
+                    ->executeQuery()->fetchAssociative();
+            }
+            else
+            {
+                $uid = $queryBuilder->select('uid')->from(Constants::TABLE_OIDC)
+                    ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))
+                ->execute()->fetch();
+            }
+            if ($uid == null) {
+                if($typo3Version > 12){
+                $queryBuilder->insert(Constants::TABLE_OIDC)->values(['uid' => 1,Constants::COUNTUSER => 10,Constants::EMAIL_SENT => 1])->executeStatement();
+                }else
+                {
+                    $queryBuilder
+                    ->insert(Constants::TABLE_OIDC)
+                    ->values([
+                        'uid' => 1,
+                        Constants::COUNTUSER => 10,
+                        Constants::EMAIL_SENT => 1])
+                    ->execute();
+                }
+            } else {
+                if($typo3Version > 12){
+                    $queryBuilder->update(Constants::TABLE_OIDC)->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))->set(Constants::EMAIL_SENT, 1)->executeStatement();
+                }else{
+                    $queryBuilder->update(Constants::TABLE_OIDC)->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))->set(Constants::EMAIL_SENT, 1)->execute();
+                }
+            }
+
             GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->flushCaches();
         }
 
@@ -58,11 +137,22 @@ class BeoidcController extends ActionController
 //------------ OPENID CONNECT SETTINGS---------------
         if (isset($_POST['option']) and $_POST['option'] == "oidc_settings") {
             if (!empty($_POST['redirect_url']) && !empty($_POST['feoidc']) && !empty($_POST['app_name']) && !empty($_POST['client_id']) && !empty($_POST['client_secret']) && !empty($_POST['scope']) && !empty($_POST['auth_endpoint']) && !empty($_POST['token_endpoint'])) {
-                if (empty($_POST['set_body_credentials'])) {
+                // Handle credentials location - allow both options to be selected
+                if (isset($_POST['set_header_credentials']) && $_POST['set_header_credentials'] == 'on') {
+                    $_POST['set_header_credentials'] = 'true';
+                } else {
+                    $_POST['set_header_credentials'] = 'false';
+                }
+                
+                if (isset($_POST['set_body_credentials']) && $_POST['set_body_credentials'] == 'on') {
+                    $_POST['set_body_credentials'] = 'true';
+                } else {
                     $_POST['set_body_credentials'] = 'false';
                 }
-                if (empty($_POST['set_header_credentials'])) {
-                    $_POST['set_header_credentials'] = 'false';
+                
+                // Default to header if neither is selected
+                if ($_POST['set_header_credentials'] == 'false' && $_POST['set_body_credentials'] == 'false') {
+                    $_POST['set_header_credentials'] = 'true';
                 }
                 $value1 = $this->validateURL($_POST['feoidc']);
                 $value2 = $this->validateURL($_POST['redirect_url']);
@@ -78,7 +168,7 @@ class BeoidcController extends ActionController
                 MoUtilities::showErrorFlashMessage('Please fill all the required fields!');
             }
         } //------------ HANDLING SUPPORT QUERY---------------
-        elseif (isset($_POST['option']) and $_POST['option'] == "mo_auth0_sso_contact_us_query_option") {
+        elseif (isset($_POST['option']) and $_POST['option'] == "mo_oauth_contact_us_query_option") {
             $this->support();
         } //------------ ATTRIBUTE MAPPING---------------
         elseif (isset($_POST['option']) and $_POST['option'] == "attribute_mapping") {
@@ -181,9 +271,33 @@ class BeoidcController extends ActionController
         }
         GeneralUtility::makeInstance(\TYPO3\CMS\Core\Cache\CacheManager::class)->flushCaches();
         if ($typo3Version >= 11.5) {
+            try {
+                $renderedContent = $this->view->render();
             return $this->responseFactory->createResponse()
                 ->withAddedHeader('Content-Type', 'text/html; charset=utf-8')
-                ->withBody($this->streamFactory->createStream($this->view->render()));
+                    ->withBody($this->streamFactory->createStream($renderedContent));
+            } catch (\Exception $e) {
+                error_log('Error rendering view in BeoidcController: ' . $e->getMessage());
+                // Fallback to simple response
+                return $this->responseFactory->createResponse()
+                    ->withAddedHeader('Content-Type', 'text/html; charset=utf-8')
+                    ->withBody($this->streamFactory->createStream('Error rendering view'));
+            }
+        }
+        // For older TYPO3 versions, create response using GeneralUtility
+        $responseFactory = GeneralUtility::makeInstance(\Psr\Http\Message\ResponseFactoryInterface::class);
+        $streamFactory = GeneralUtility::makeInstance(\Psr\Http\Message\StreamFactoryInterface::class);
+        try {
+            $renderedContent = $this->view->render();
+            return $responseFactory->createResponse()
+                ->withAddedHeader('Content-Type', 'text/html; charset=utf-8')
+                ->withBody($streamFactory->createStream($renderedContent));
+        } catch (\Exception $e) {
+            error_log('Error rendering view in BeoidcController (legacy): ' . $e->getMessage());
+            // Fallback to simple response
+            return $responseFactory->createResponse()
+                ->withAddedHeader('Content-Type', 'text/html; charset=utf-8')
+                ->withBody($streamFactory->createStream('Error rendering view'));
         }
     }
 
@@ -206,18 +320,36 @@ class BeoidcController extends ActionController
 
         error_log("In BeoidcController : defaultSettings: ");
         $this->oidc_object = json_encode($postArray);
+        $typo3Version = MoUtilities::getTypo3Version();
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(Constants::TABLE_OIDC);
+        if($typo3Version > 12){
         $uid = $queryBuilder->select('uid')->from(Constants::TABLE_OIDC)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, PDO::PARAM_INT)))
+                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))->executeQuery()->fetchAssociative();
+        }else{
+            $uid = $queryBuilder->select('uid')->from(Constants::TABLE_OIDC)
+                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))
             ->execute()->fetch();
+        }
         if ($uid == null) {
+            if($typo3Version > 12){
+            $affectedRows = $queryBuilder
+                ->insert(Constants::TABLE_OIDC)
+                ->values([
+                    Constants::OIDC_OIDC_OBJECT => $this->oidc_object])
+                    ->executeStatement();
+            }else{
             $affectedRows = $queryBuilder
                 ->insert(Constants::TABLE_OIDC)
                 ->values([
                     Constants::OIDC_OIDC_OBJECT => $this->oidc_object])
                 ->execute();
+            }
         } else {
-            $queryBuilder->update(Constants::TABLE_OIDC)->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, PDO::PARAM_INT)))->set(Constants::OIDC_OIDC_OBJECT, $this->oidc_object)->execute();
+            if($typo3Version > 12){
+                $queryBuilder->update(Constants::TABLE_OIDC)->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))->set(Constants::OIDC_OIDC_OBJECT, $this->oidc_object)->executeStatement();
+            }else{
+                $queryBuilder->update(Constants::TABLE_OIDC)->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))->set(Constants::OIDC_OIDC_OBJECT, $this->oidc_object)->execute();
+            }
         }
     }
 
@@ -229,16 +361,21 @@ class BeoidcController extends ActionController
             return;
         }
         // Contact Us query
-        $email = $_POST['mo_auth0_sso_contact_us_email'];
-        $phone = $_POST['mo_auth0_sso_contact_us_phone'];
-        $query = $_POST['mo_auth0_sso_contact_us_query'];
+        $email = isset($_POST['mo_auth0_sso_contact_us_email']) ? trim($_POST['mo_auth0_sso_contact_us_email']) : '';
+        $phone = isset($_POST['mo_auth0_sso_contact_us_phone']) ? trim($_POST['mo_auth0_sso_contact_us_phone']) : '';
+        $query = isset($_POST['mo_auth0_sso_contact_us_query']) ? trim($_POST['mo_auth0_sso_contact_us_query']) : '';
+
+        // Debug logging
+        error_log("Support form data - Email: " . $email . ", Query: " . $query);
 
         $customer = new CustomerMo();
 
-        if ($this->mo_check_empty_or_null($email) || $this->mo_check_empty_or_null($query)) {
-            MoUtilities::showErrorFlashMessage('Please enter a valid Email address. ');
+        if ($this->mo_check_empty_or_null($email)) {
+            MoUtilities::showErrorFlashMessage('Please enter a valid Email address.');
+        } elseif ($this->mo_check_empty_or_null($query)) {
+            MoUtilities::showErrorFlashMessage('Please enter your query.');
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            MoUtilities::showErrorFlashMessage('Please enter a valid Email address. ');
+            MoUtilities::showErrorFlashMessage('Please enter a valid Email address.');
         } else {
             $submitted = $customer->submit_contact($email, $phone, $query) ? json_decode($customer->submit_contact($email, $phone, $query), true) : $customer->submit_contact($email, $phone, $query);
             if ($submitted['status'] == 'SUCCESS') {
@@ -334,23 +471,38 @@ class BeoidcController extends ActionController
         if ($this->fetchFromCustomer('id') == null) {
             $this->insertCustomerRow();
         }
+        $typo3Version = MoUtilities::getTypo3Version();
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(Constants::TABLE_CUSTOMER);
-        $queryBuilder->update(Constants::TABLE_CUSTOMER)->where($queryBuilder->expr()->eq('id', $queryBuilder->createNamedParameter(1, PDO::PARAM_INT)))->set($column, $value)->execute();
+        if($typo3Version > 12){
+            $queryBuilder->update(Constants::TABLE_CUSTOMER)->where($queryBuilder->expr()->eq('id', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))->set($column, $value)->executeStatement();
+        }else{
+            $queryBuilder->update(Constants::TABLE_CUSTOMER)->where($queryBuilder->expr()->eq('id', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))->set($column, $value)->execute();
+        }
     }
 
     public function fetchFromCustomer($col)
     {
+        $typo3Version = MoUtilities::getTypo3Version();
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(Constants::TABLE_CUSTOMER);
-        $variable = $queryBuilder->select($col)->from(Constants::TABLE_CUSTOMER)->where($queryBuilder->expr()->eq('id', $queryBuilder->createNamedParameter(1, PDO::PARAM_INT)))->execute()->fetch();
-        return $variable && $variable[$col] ? $variable[$col] : null;
+        if($typo3Version > 12){
+            $variable = $queryBuilder->select($col)->from(Constants::TABLE_CUSTOMER)->where($queryBuilder->expr()->eq('id', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))->executeQuery()->fetchAssociative();
+        }else{
+            $variable = $queryBuilder->select($col)->from(Constants::TABLE_CUSTOMER)->where($queryBuilder->expr()->eq('id', $queryBuilder->createNamedParameter(1, Connection::PARAM_INT)))->execute()->fetch();
+        }
+        return is_array($variable) ? $variable[$col] : $variable;
     }
 
 // --------------------SUPPORT QUERY---------------------
 
     public function insertCustomerRow()
     {
+        $typo3Version = MoUtilities::getTypo3Version();
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(Constants::TABLE_CUSTOMER);
+        if($typo3Version > 12){
+            $affectedRows = $queryBuilder->insert(Constants::TABLE_CUSTOMER)->values(['id' => '1'])->executeStatement();
+        }else{
         $affectedRows = $queryBuilder->insert(Constants::TABLE_CUSTOMER)->values(['id' => '1'])->execute();
+        }
     }
 
     public function removeCustomer()
@@ -360,5 +512,26 @@ class BeoidcController extends ActionController
         $this->updateCustomer(Constants::CUSTOMER_TOKEN, '');
         $this->updateCustomer(Constants::CUSTOMER_API_KEY, '');
         $this->updateCustomer(Constants::CUSTOMER_REGSTATUS, '');
+    }
+
+    // --------------------SET COUNT---------------------
+    public function setCount()
+    {
+        $count = 10;
+        $encryptedCount = MoUtilities::encryptUserCount($count);
+        $typo3Version = MoUtilities::getTypo3Version();
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable(Constants::TABLE_OIDC);
+        $affectedRows = $queryBuilder->insert(Constants::TABLE_OIDC)
+                     ->values([
+                        'uid' => 1,
+                        Constants::COUNTUSER => $encryptedCount]);
+        if($typo3Version > 12)
+        {
+            $affectedRows->executeStatement();
+        }
+        else
+        {
+            $affectedRows->execute();
+        }
     }
 }

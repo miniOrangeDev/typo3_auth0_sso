@@ -1,11 +1,17 @@
-<html data-namespace-typo3-fluid="true"
-      xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
-
+<!DOCTYPE html>
+<html lang="en" xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers">
+<head>
+    <f:be.pageRenderer />
+    <title><f:render section="title" /></title>
+    <link rel="stylesheet" href="{f:uri.resource(path: 'EXT:auth0_sso/Resources/Public/Css/auth0_sso/bootstrap.min.css')}" />
+    <link rel="stylesheet" href="{f:uri.resource(path: 'EXT:auth0_sso/Resources/Public/Css/auth0_sso/main.css')}" />
+    <script type="module" src="{f:uri.resource(path: 'EXT:auth0_sso/Resources/Public/JavaScript/auth0_sso/jquery.min.js')}" ></script>
+    <script type="module" src="{f:uri.resource(path: 'EXT:auth0_sso/Resources/Public/JavaScript/auth0_sso/bootstrap.min.js')}" ></script>
+    <script type="module" src="{f:uri.resource(path: 'EXT:auth0_sso/Resources/Public/JavaScript/auth0_sso/main.js')}" ></script>
+    <f:render section="head" optional="true" />
+</head>
 <body>
 <f:render section="content"/>
-<f:render section="css"/>
-<f:render section="js"/>
 </body>
 
 </html>

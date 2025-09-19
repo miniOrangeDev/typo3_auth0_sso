@@ -10,7 +10,7 @@ use TYPO3\CMS\Core\Information\Typo3Version;
 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['features']['security.backend.enforceContentSecurityPolicy'] = false;
 $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['enforceValidation'] = false;
-$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'] = ['idp_name', 'RelayState', 'option', 'SAMLRequest', 'SAMLResponse', 'SigAlg', 'Signature', 'type', 'app', 'code', 'state'];
+$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'] = ['idp_name', 'RelayState', 'option', 'SAMLRequest', 'SAMLResponse', 'SigAlg', 'Signature', 'type', 'app', 'code', 'state', 'logintype'];
 
 call_user_func(
     function () {
@@ -63,57 +63,7 @@ call_user_func(
             $cache_actions_logout
         );
 
-
-        // wizards
-        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-            'mod {
-            wizards.newContentElement.wizardItems.plugins {
-                elements {
-                    Feoidckey {
-                        iconIdentifier = auth0_sso-plugin-feoidc
-                        title = LLL:EXT:auth0_sso/Resources/Private/Language/locallang_db.xlf:tx_auth0_sso_feoidc.name
-                        description = LLL:EXT:auth0_sso/Resources/Private/Language/locallang_db.xlf:tx_auth0_sso_feoidc.description
-                        tt_content_defValues {
-                            CType = list
-                            list_type = Feoidc
-                        }
-                    }
-                    Responsekey {
-                        iconIdentifier = auth0_sso-plugin-response
-                        title = LLL:EXT:auth0_sso/Resources/Private/Language/locallang_db.xlf:tx_auth0_sso_response.name
-                        description = LLL:EXT:auth0_sso/Resources/Private/Language/locallang_db.xlf:tx_auth0_sso_response.description
-                        tt_content_defValues {
-                            CType = list
-                            list_type = Response
-                        }
-                    }
-                }
-                show = *
-            }
-       }'
-        );
-
-        $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
-        $iconRegistry->registerIcon(
-            'auth0_sso-plugin-feoidc',
-            \TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider::class,
-            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.png']
-        );
-        $iconRegistry->registerIcon(
-            'auth0_sso-plugin-response',
-            \TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider::class,
-            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.png']
-        );
-        $iconRegistry->registerIcon(
-            'auth0_sso-plugin-logout',
-            \TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider::class,
-            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.png']
-        );
-        $iconRegistry->registerIcon(
-            'auth0_sso-plugin-bekey',
-            \TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider::class,
-            ['source' => 'EXT:auth0_sso/Resources/Public/Icons/Extension.png']
-        );
+        // Migration for encrypted countuser - handled via lazy loading in controllers
 
     }
 );
